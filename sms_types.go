@@ -1,11 +1,12 @@
-package africastalkinggo
+package africastalking
 
 type SendSmsRequest struct {
-	Username     string   `json:"username"`
-	PhoneNumbers []string `json:"phone_numbers"`
 	Message      string   `json:"message"`
+	MaskedNumber string   `json:"maskedNumber,omitempty"`
+	Telco        string   `json:"telco,omitempty"`
 	SenderId     string   `json:"senderId"`
-	Enqueue      int16    `json:"enqueue"`
+	Enqueue      int16    `json:"enqueue,omitempty"`
+	PhoneNumbers []string `json:"phoneNumbers"`
 }
 
 type SendSmsResponse struct {

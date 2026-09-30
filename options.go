@@ -1,41 +1,31 @@
-package africastalkinggo
+package africastalking
 
 import "errors"
 
-const sandboxUrl string = "https://api.sandbox.africastalking.com/version1"
-const productionUrl string = "https://api.africastalking.com/version1"
+type Option func(*AfricasTalking) error
 
-const (
-	SmsPath     string = "/messaging/bulk"
-	AirtimePath string = "/airtime/send"
-)
-
-type Credentials struct {
-	Username string
-	ApiKey   string
-}
-
-// verify credentials
-func WithCredentials(username, apiKey string) (Credentials, error) {
-	if username == "" || apiKey == "" {
-		return Credentials{}, errors.New("missing africa's talking credentials")
+func WithCredentials(username, apiKey string) Option {
+	return func(at *AfricasTalking) error {
+		if username == "" {
+			return errors.New("africastalking: missing username")
+		}
+		if apiKey == "" {
+			return errors.New("africastalking: missing api key")
+		}
+		at.userName, at.apiKey = username, apiKey
+		return nil
 	}
-
-	return Credentials{Username: username, ApiKey: apiKey}, nil
 }
 
 // set base url based on user's sandbox option
-func WithSandbox(sandbox bool) string {
-	if sandbox {
-		return sandboxUrl
-	} else {
-		return productionUrl
+func WithSandbox() Option {
+	return func(at *AfricasTalking) error {
+		at.hosts = sandboxHosts
+		return nil
 	}
 }
-func WithHTTPClient() {}
-func WithBaseURL() {
 
-}                    //escape hatch/testing
-func WithRetry()     {}
-func WithUserAgent() {}
-func WithLogger()    {}
+// func WithBaseURL() Option {} //escape hatch/testing
+// func WithRetry()     {}
+// func WithUserAgent() Option{}
+// func WithLogger() Option {}
