@@ -1,1 +1,1 @@
-package africastalkinggo
+package africastalking
