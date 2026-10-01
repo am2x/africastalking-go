@@ -8,6 +8,8 @@
         "gocritic",
         "gofumpt",
         "gosec",
-        "ineffassign"
+        "ineffassign",
+        "nolint",
+        "Telco"
     ]
 }
