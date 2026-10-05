@@ -18,13 +18,13 @@ type APIError struct {
 	Body       string // raw response body, truncated
 }
 
+// Sentinel errors for matching broad API failure conditions with errors.Is.
+// Use errors.As with [APIError] when you need the status code or body.
 var (
-	ErrUnauthorized            = errors.New("africastalking: unauthorized")
-	ErrRateLimited             = errors.New("africastalking: rate limited")
-	ErrBadRequest              = errors.New("africastalking: bad request")
-	ErrServer                  = errors.New("africastalking: server error")
-	ErrServerGatewayError      = errors.New("africastalking: server gateway error")
-	ErrRejectedByGatewayServer = errors.New("africastalking: rejected by gateway server")
+	ErrUnauthorized = errors.New("africastalking: unauthorized")
+	ErrRateLimited  = errors.New("africastalking: rate limited")
+	ErrBadRequest   = errors.New("africastalking: bad request")
+	ErrServer       = errors.New("africastalking: server error")
 )
 
 const maxErrBody = 512
@@ -67,6 +67,7 @@ func extractMessage(body []byte) string {
 	return "" // not JSON — Body still carries the raw text
 }
 
+// Error returns an well formatted error string.
 func (e *APIError) Error() string {
 	if e.Message != "" {
 		return fmt.Sprintf("africastalking: %s: %d: %s", e.Endpoint, e.StatusCode, e.Message)
@@ -90,6 +91,7 @@ func (e *APIError) Is(target error) bool {
 	return false
 }
 
+// ValidationErr reports input rejected by the SDK before any request was sent.
 type ValidationErr struct {
 	Field   string
 	Message string
