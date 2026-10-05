@@ -6,7 +6,8 @@ import (
 	"github.com/AllanM007/africastalking-go/internal/transport"
 )
 
-// africa's talking object used to interact with api services
+// AfricasTalking is a client for the Africa's Talking API. Create one with
+// [New] and share it; it is safe for concurrent use by multiple goroutines.
 type AfricasTalking struct {
 	userName string
 	apiKey   string
@@ -20,6 +21,9 @@ func (at *AfricasTalking) apiURL(path string) string      { return at.hosts.api 
 func (at *AfricasTalking) voiceURL(path string) string    { return at.hosts.voice + path }
 func (at *AfricasTalking) paymentsURL(path string) string { return at.hosts.payments + path }
 
+// New returns a client configured by opts. It returns an error if credentials
+// are missing or any option is invalid. Requests go to the production hosts
+// unless [WithSandbox] is passed.
 func New(opts ...Option) (*AfricasTalking, error) {
 	at := &AfricasTalking{
 		hosts:  productionHosts,

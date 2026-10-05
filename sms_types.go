@@ -1,23 +1,38 @@
 package africastalking
 
+// SendSMSRequest is the input to [SMSService.Send]. Message, SenderID and at
+// least one entry in PhoneNumbers are required.
 type SendSMSRequest struct {
-	Message      string
+	// Message is the text to deliver.
+	Message string
+	//SenderID is the registered alphanumeric sender ID or short code.
+	SenderID string
+	// MaskedNumber is optional phone number field and only applies to Safaricom numbers in Kenya.
 	MaskedNumber string
-	Telco        string
-	SenderID     string
-	Enqueue      bool
+	// Telco is optional and only applies to masked/hashed safaricom numbers and should be specified when the [MaskedNumber] value is present.
+	Telco string
+	// Enqueue asks Africa's Talking to queue the message rather than attempt
+	// immediate delivery. Useful for large bulk sends.
+	Enqueue bool
+	// PhoneNumbers are the recipients in international format, e.g. "+254700000000".
 	PhoneNumbers []string
 }
 
+// SendSMSResponse is the result of [SMSService.Send]. Use [SendSMSResponse.Accepted]
+// and [SendSMSResponse.Failed] to inspect per-recipient outcomes rather than
+// reading Recipients directly.
 type SendSMSResponse struct {
 	SMSMessageData SMSMessageData `json:"SMSMessageData"`
 }
 
+// SMSMessageData holds the summary message and the per-recipient results.
 type SMSMessageData struct {
 	Message    string         `json:"Message"`
 	Recipients []SMSRecipient `json:"Recipients"`
 }
 
+// SMSRecipient is the outcome for a single recipient. StatusCode is the
+// authoritative result; Status is Africa's Talking' display text for it.
 type SMSRecipient struct {
 	StatusCode SMSStatusCode `json:"statusCode"`
 	Number     string        `json:"number"`

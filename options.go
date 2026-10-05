@@ -2,8 +2,12 @@ package africastalking
 
 import "errors"
 
+// Option configures a client during [New]. Options are applied in order and
+// may return an error to reject their input.
 type Option func(*AfricasTalking) error
 
+// WithCredentials sets the Africa's Talking username and API key. It is
+// required: [New] fails without it.
 func WithCredentials(username, apiKey string) Option {
 	return func(at *AfricasTalking) error {
 		if username == "" {
@@ -17,7 +21,8 @@ func WithCredentials(username, apiKey string) Option {
 	}
 }
 
-// set base url based on user's sandbox option
+// WithSandbox points every product at the Africa's Talking sandbox hosts.
+// Without it, requests go to production.
 func WithSandbox() Option {
 	return func(at *AfricasTalking) error {
 		at.hosts = sandboxHosts
