@@ -31,7 +31,7 @@ type Request struct {
 	ContentType string
 	UserAgent   string
 	Body        []byte
-	Retryable   bool //false for anything involving money transfer
+	// Retryable   bool //TODO: set up once retry.go is live: false for anything involving money transfer
 }
 
 type Response struct {
