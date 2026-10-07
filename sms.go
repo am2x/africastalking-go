@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/AllanM007/africastalking-go/internal/encoding"
-	"github.com/AllanM007/africastalking-go/internal/transport"
+	"github.com/allanmuiruri/africastalking-go/internal/encoding"
+	"github.com/allanmuiruri/africastalking-go/internal/transport"
 )
 
 // SMSService is used to interact with africa's talking sms api

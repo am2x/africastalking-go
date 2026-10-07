@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AllanM007/africastalking-go/internal/transport"
+	"github.com/allanmuiruri/africastalking-go/internal/transport"
 )
 
 // APIError is returned when Africa's Talking rejects a request.

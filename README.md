@@ -20,13 +20,13 @@ To install the SDK, you need to have Go 1.23 or higher installed on your machine
 - Install the SDK using the go get command:
 
 ```bash
-go get github.com/AllanM007/africastalking-go
+go get github.com/allanmuiruri/africastalking-go
 ```
 
 - Import the SDK in your code using the import statement:
 
 ```go
-import "github.com/AllanM007/africastalking-go"
+import "github.com/allanmuiruri/africastalking-go"
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/AllanM007/africastalking-go"
+	"github.com/allanmuiruri/africastalking-go"
 )
 
 func main() {
