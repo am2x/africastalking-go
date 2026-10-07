@@ -1,0 +1,9 @@
+{
+    "SMSMessageData":{
+        "Message":"Sent to 0/2 Total Cost: 0",
+        "Recipients":[
+            {"statusCode":405,"number":"+254700000000","status":"InsufficientBalance","cost":"0","messageId":""},
+            {"statusCode":405,"number":"+254711111111","status":"InsufficientBalance","cost":"KES 0","messageId":""}
+        ]
+    }
+}

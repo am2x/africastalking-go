@@ -1,6 +1,11 @@
 package africastalking
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"net/url"
+	"strings"
+)
 
 // Option configures a client during [New]. Options are applied in order and
 // may return an error to reject their input.
@@ -30,7 +35,22 @@ func WithSandbox() Option {
 	}
 }
 
-// func WithBaseURL() Option {} //escape hatch/testing
+// WithBaseURL overrides the base URL used for every product. It exists for
+// tests and for routing through a proxy; prefer [WithSandbox] for normal use.
+func WithBaseURL(rawURL string) Option {
+	return func(at *AfricasTalking) error {
+		u, err := url.Parse(rawURL)
+		if err != nil {
+			return fmt.Errorf("africastalking: invalid base url %q: %w", rawURL, err)
+		}
+		if u.Scheme == "" || u.Host == "" {
+			return fmt.Errorf("africastalking: base url %q needs a scheme and host", rawURL)
+		}
+		base := strings.TrimSuffix(rawURL, "/")
+		at.hosts = hosts{api: base, voice: base, payments: base}
+		return nil
+	}
+} //escape hatch/testing
 // func WithRetry()     {}
 // func WithUserAgent() Option{}
 // func WithLogger() Option {}

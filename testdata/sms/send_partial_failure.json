@@ -1,0 +1,10 @@
+{
+    "SMSMessageData":{
+        "Message":"Sent to 1/3 Total Cost: KES 0.8000",
+        "Recipients":[
+            {"statusCode":101,"number":"+254700000000","status":"Success","cost":"KES 0.8000","messageId":"ATPid_SampleTxnId123"},
+            {"statusCode":403,"number":"+254711111111","status":"InvalidPhoneNumber","cost":"KES 0","messageId":""},
+            {"statusCode":405,"number":"+254722222222","status":"InsufficientBalance","cost":"KES 0","messageId":""}
+        ]
+    }
+}
