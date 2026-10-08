@@ -44,25 +44,26 @@ import (
 )
 
 func main() {
-	// Create a client object with your username and API key
-	client := africastalking.NewClient("YOUR_USERNAME", "YOUR_API_KEY")
-
-	// Use the client object to access the SMS service
-	smsService := client.SMS
-
-	// Create an SMS sender object with the required parameters
-	smsSender := smsService.SmsSender{
-		Recipients: []string{"+254712345678"},
-		Message:    "Hello, this is a test message from Africa's Talking",
-		Sender:     "YOUR_SENDER",
-	}
-
-	// Call the Send method and get the result
-	res, err := smsService.Send(smsSender)
+	// Create a client object with your options.
+	at, err := africastalking.New(
+		WithCredentials("YOUR_USERNAME", "YOUR_API_KEY"),
+		WithSandbox() // define whether to use sandbox env or live api.
+	)
 	if err != nil {
-		log.Fatal(err)
+		// ...
 	}
-	fmt.Println(res)
+
+	resp, err := at.SMS.Send(ctx, &africastalking.SendSMSRequest{
+		To:      []string{"+254711XXXYYY"},
+		Message: "Hello",
+		From:    "MYSHORTCODE",
+	})
+	
+	var apiErr *africastalking.APIError
+	if errors.As(err, &apiErr) && apiErr.StatusCode == http.StatusUnauthorized {
+		// ...
+	}
+
 }
 ```
 
