@@ -14,8 +14,8 @@ type HTTPClient struct {
 	Client     *http.Client
 	Breaker    *CircuitBreaker
 	MaxRetries int
-	// BaseDelay  time.Duration
-	// MaxDelay   time.Duration
+	BaseDelay  time.Duration
+	MaxDelay   time.Duration
 	// Wait func(time.Duration)
 }
 
@@ -31,7 +31,10 @@ type Request struct {
 	ContentType string
 	UserAgent   string
 	Body        []byte
-	// Retryable   bool //TODO: set up once retry.go is live: false for anything involving money transfer
+	// Retryable allows the transport to resend this request on a transient failure.
+	// Leave it false for anything that creates, sends or moves money:
+	// a resend after a timeout can duplicate the effect.
+	Retryable bool
 }
 
 type Response struct {
@@ -53,7 +56,37 @@ func New() *HTTPClient {
 	}
 }
 
+// Do performs retryable attempts.
 func (c *HTTPClient) Do(ctx context.Context, r Request, apiKey string) (*Response, error) {
+	attempts := 1
+	if r.Retryable {
+		attempts += c.maxRetries()
+	}
+
+	var resp *Response
+	for n := range attempts {
+		if n > 0 {
+			if err := wait(ctx, c.backoff(n-1, parseRetryAfter(resp.Header))); err != nil {
+				return resp, fmt.Errorf("transport: retry interrupted: %w", err)
+			}
+		}
+
+		var err error
+		resp, err = c.do(ctx, r, apiKey)
+		if err != nil {
+			return nil, err
+		}
+		if !retryableStatus(resp.StatusCode) {
+			return resp, nil
+		}
+	}
+	// every attempt was retryable; hand back the last response and let the
+	// caller map it to an error.
+	return resp, nil
+}
+
+// do performs a single attempt.
+func (c *HTTPClient) do(ctx context.Context, r Request, apiKey string) (*Response, error) {
 	request, err := http.NewRequestWithContext(ctx, r.Method, r.URL, bytes.NewReader(r.Body))
 	if err != nil {
 		return &Response{}, fmt.Errorf("transport: build request: %w", err)
