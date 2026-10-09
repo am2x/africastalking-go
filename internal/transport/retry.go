@@ -16,7 +16,7 @@ const (
 )
 
 func (c *HTTPClient) maxRetries() int {
-	if c.maxRetries() > 0 {
+	if c.MaxRetries > 0 {
 		return c.MaxRetries
 	}
 	return DefaultMaxRetries
