@@ -32,15 +32,6 @@ type smsPayload struct {
 // SMSStatusCode — use Accepted() and Failed() on the response to inspect
 // them. Final delivery is only known via the delivery-report webhook.
 func (s *SMSService) Send(ctx context.Context, sms SendSMSRequest) (SendSMSResponse, error) {
-	payload := smsPayload{
-		Username:     s.at.userName,
-		Message:      sms.Message,
-		PhoneNumbers: sms.PhoneNumbers,
-		SenderID:     sms.SenderID,
-		MaskedNumber: sms.MaskedNumber,
-		Telco:        sms.Telco,
-		Enqueue:      boolToInt(sms.Enqueue),
-	}
 
 	if sms.Message == "" {
 		return SendSMSResponse{}, &ValidationErr{Field: "Message", Message: "message is required"}
@@ -51,6 +42,16 @@ func (s *SMSService) Send(ctx context.Context, sms SendSMSRequest) (SendSMSRespo
 
 	if len(sms.PhoneNumbers) == 0 {
 		return SendSMSResponse{}, &ValidationErr{Field: "PhoneNumbers", Message: "at least one recipient is required"}
+	}
+
+	payload := smsPayload{
+		Username:     s.at.userName,
+		Message:      sms.Message,
+		PhoneNumbers: sms.PhoneNumbers,
+		SenderID:     sms.SenderID,
+		MaskedNumber: sms.MaskedNumber,
+		Telco:        sms.Telco,
+		Enqueue:      boolToInt(sms.Enqueue),
 	}
 
 	body, err := encoding.EncodeJSON(payload)
@@ -64,7 +65,7 @@ func (s *SMSService) Send(ctx context.Context, sms SendSMSRequest) (SendSMSRespo
 		ContentType: transport.ContentTypeJSON,
 		Body:        body,
 		UserAgent:   transport.UserAgent,
-		// Retryable:   false,
+		Retryable:   false, // sms sends should not be retryable to avoid double-sending/spending
 	}
 	resp, err := s.at.client.Do(ctx, smsReq, s.at.apiKey)
 	if err != nil {
