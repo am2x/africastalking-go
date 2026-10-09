@@ -6,6 +6,7 @@ package testutil
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -111,14 +112,24 @@ func Respond(status int, body string) http.Handler {
 // relative to the package under test.
 func Fixture(t testing.TB, status int, name string) http.Handler {
 	t.Helper()
-	body, err := os.ReadFile(filepath.Join("testdata", name))
+	body, err := readFixture(name)
 	if err != nil {
-		t.Fatalf("testutil: reading fixture %s: %v", name, err)
-	}
-	if len(bytes.TrimSpace(body)) == 0 {
-		t.Fatalf("testutil: fixture %s is empty", name)
+		t.Fatalf("testutil: %v", err)
 	}
 	return Respond(status, string(body))
+}
+
+// readFixture holds the part of Fixture that can fail, so it can be tested
+// without a testing.TB (which cannot be faked outside the testing package).
+func readFixture(name string) ([]byte, error) {
+	body, err := os.ReadFile(filepath.Join("testdata", name))
+	if err != nil {
+		return nil, fmt.Errorf("reading fixture %s: %w", name, err)
+	}
+	if len(bytes.TrimSpace(body)) == 0 {
+		return nil, fmt.Errorf("fixture %s is empty", name)
+	}
+	return body, nil
 }
 
 // Sequence replies with each handler in turn, so a test can exercise a retry
