@@ -8,7 +8,6 @@ linters:
     - errcheck
     - staticcheck
     - revive
-    - gofumpt
     - ineffassign
     - misspell
     - bodyclose
@@ -16,6 +15,10 @@ linters:
     - unused
     - gosec
     - gocritic
+formatters:
+  enable:
+    - gofumpt
+    - goimports
 
 issues:
   max-issues-per-linter: 0
