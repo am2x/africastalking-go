@@ -5,7 +5,7 @@ package africastalking
 type SendSMSRequest struct {
 	// Message is the text to deliver.
 	Message string
-	//SenderID is the registered alphanumeric sender ID or short code.
+	// SenderID is the registered alphanumeric sender ID or short code.
 	SenderID string
 	// MaskedNumber is optional phone number field and only applies to Safaricom numbers in Kenya.
 	MaskedNumber string
@@ -16,6 +16,28 @@ type SendSMSRequest struct {
 	Enqueue bool
 	// PhoneNumbers are the recipients in international format, e.g. "+254700000000".
 	PhoneNumbers []string
+}
+
+// SendPremiumSMSRequest is the input to [SMSService.SendPremium]. Message, From and at
+// least one entry in To are required.
+type SendPremiumSMSRequest struct {
+	// Message is the text to deliver.
+	Message string
+	// From is the registered alphanumeric sender ID or short code.
+	From string
+	// Enqueue asks Africa's Talking to queue the message rather than attempt
+	// immediate delivery. Useful for large bulk sends.
+	Enqueue bool
+	// To are the recipients in international format, e.g. "+254700000000".
+	To []string
+	// Keyword is used for premium service.
+	Keyword string
+	// LinkID is used for premium services to send OnDemand messages. The linkId is forwarded to your application when the user sends a message to your service.
+	LinkID string
+	// RetryDurationInHours specifies the number of hours your subscription message should be retried in case it’s not delivered to the subscriber.
+	RetryDurationInHours int
+	// RequestId is a client specified request identifier. We add it return it as part of the http dlr callback.
+	RequestID string
 }
 
 // SendSMSResponse is the result of [SMSService.Send]. Use [SendSMSResponse.Accepted]
