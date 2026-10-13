@@ -64,7 +64,10 @@ func (c *HTTPClient) backoff(n int, retryAfter time.Duration) time.Duration {
 	if ceiling <= 0 {
 		return 0
 	}
-	return rand.N(ceiling)
+
+	// Jitter only needs to be unpredictable enough to spread retries out; it is
+	// not a secret, so a cryptographic source would be pointless overhead.
+	return rand.N(ceiling) //nolint:gosec // G404: jitter needs no crypto randomness
 }
 
 // parseRetryAfter reads the delay-seconds from the Retry-After header.
@@ -75,7 +78,7 @@ func parseRetryAfter(h http.Header) time.Duration {
 	}
 	secs, err := strconv.Atoi(v)
 	if err != nil || secs < 0 {
-		return 0 //the HTTP-date form is not handled; default to backoff.
+		return 0 // the HTTP-date form is not handled; default to backoff.
 	}
 	return time.Duration(secs) * time.Second
 }

@@ -17,9 +17,10 @@ type AfricasTalking struct {
 	// logger
 }
 
-func (at *AfricasTalking) apiURL(path string) string      { return at.hosts.api + path }
-func (at *AfricasTalking) voiceURL(path string) string    { return at.hosts.voice + path }
-func (at *AfricasTalking) paymentsURL(path string) string { return at.hosts.payments + path }
+func (at *AfricasTalking) apiURL(path string) string { return at.hosts.api + path }
+
+// func (at *AfricasTalking) voiceURL(path string) string    { return at.hosts.voice + path }
+// func (at *AfricasTalking) paymentsURL(path string) string { return at.hosts.payments + path }
 
 // New returns a client configured by opts. It returns an error if credentials
 // are missing or any option is invalid. Requests go to the production hosts

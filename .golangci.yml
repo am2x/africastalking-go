@@ -15,6 +15,16 @@ linters:
     - unused
     - gosec
     - gocritic
+  settings:
+    gosec:
+      excludes:
+        - G304 # ignore file inclusion via variable.
+        - G107 # ignore http request made with variable url.   
+  exclusions:
+    rules:
+      - linters:
+          - bodyclose
+        path: "_test.go"
 formatters:
   enable:
     - gofumpt
@@ -23,3 +33,5 @@ formatters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
+
+

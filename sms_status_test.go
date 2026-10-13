@@ -88,7 +88,7 @@ func TestSMSResponsePartitioning(t *testing.T) {
 		t.Errorf("failed[2] code = %v, want InsufficientBalance", failed[1].StatusCode)
 	}
 
-	//a partial failure is not an error
+	// a partial failure is not an error
 	if err := resp.Err(); err != nil {
 		t.Errorf("Err() = %v, want nil for a partial failure", err)
 	}
