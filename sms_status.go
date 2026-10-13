@@ -11,6 +11,11 @@ import (
 // the numbers overlap but mean entirely different things
 type SMSStatusCode int
 
+// The per-recipient status codes documented by Africa's Talking. 1xx means
+// the message was taken for delivery, 4xx that the recipient was refused, and
+// 5xx that the carrier gateway failed. Prefer the Accepted, Rejected and
+// GatewayFailed helpers over comparing codes directly, and note that these
+// overlap numerically with HTTP statuses while meaning something unrelated.
 const (
 	SMSStatusProcessed             SMSStatusCode = 100
 	SMSStatusSent                  SMSStatusCode = 101

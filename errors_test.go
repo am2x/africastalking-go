@@ -110,11 +110,11 @@ func TestAPIError_Error(t *testing.T) {
 		{
 			testName: "includes the message when there is none",
 			err:      &APIError{StatusCode: 400, Endpoint: smsPath, Message: "Bad request"},
-			want:     "africastalking: /messaging/bulk: 400: Bad request",
+			want:     "africastalking: /version1/messaging/bulk: 400: Bad request",
 		}, {
 			testName: "falls back to the status when there is no message",
 			err:      &APIError{StatusCode: 401, Endpoint: smsPath},
-			want:     "africastalking: /messaging/bulk: unexpected status: 401",
+			want:     "africastalking: /version1/messaging/bulk: unexpected status: 401",
 		},
 	}
 	for _, tt := range tests {

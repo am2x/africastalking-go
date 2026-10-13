@@ -14,13 +14,13 @@ type recipient struct {
 func TestEncodeForm(t *testing.T) {
 	type formPayload struct {
 		UserName string `form:"username"`
-		SenderId string `form:"senderId"`
+		SenderID string `form:"senderId"`
 		Numbers  string `form:"numbers"`
 	}
 
 	type optionalPayload struct {
 		UserName string `form:"username"`
-		SenderId string `form:"senderId,omitempty"`
+		SenderID string `form:"senderId,omitempty"`
 		Enqueue  *bool  `form:"enqueue,omitempty"`
 	}
 
@@ -36,7 +36,7 @@ func TestEncodeForm(t *testing.T) {
 	}
 
 	type badTagPayload struct {
-		SenderId string `form:"senderId,omitemtpy"`
+		SenderID string `form:"senderId,omitemtpy"`
 	}
 
 	type noJSONOptionPayload struct {
@@ -46,7 +46,7 @@ func TestEncodeForm(t *testing.T) {
 
 	type noJSONTagPayload struct {
 		Username     string
-		SenderId     string
+		SenderID     string
 		PhoneNumbers string
 	}
 
@@ -66,8 +66,7 @@ func TestEncodeForm(t *testing.T) {
 			testName: "all fields encoded, keys sorted",
 			v:        formPayload{"user1", "CODE123", "254712345678"},
 			want:     "numbers=254712345678&senderId=CODE123&username=user1",
-		},
-		{
+		}, {
 			testName: "omitempty skips zero values",
 			v:        optionalPayload{UserName: "user1"},
 			want:     "username=user1",
@@ -93,7 +92,7 @@ func TestEncodeForm(t *testing.T) {
 			wantErr:  "form encode of nil pointer",
 		}, {
 			testName: "unknown tag option",
-			v:        badTagPayload{SenderId: "CODE123"},
+			v:        badTagPayload{SenderID: "CODE123"},
 			wantErr:  `unknown form tag option "omitemtpy"`,
 		}, {
 			testName: "float is rejected so money never drifts",
@@ -105,8 +104,8 @@ func TestEncodeForm(t *testing.T) {
 			wantErr:  "requires the `json` tag option",
 		}, {
 			testName: "untagged fields fall back to the Go field name",
-			v:        noJSONTagPayload{Username: "user1", SenderId: "CODE123", PhoneNumbers: "+254711111111"},
-			want:     "PhoneNumbers=%2B254711111111&SenderId=CODE123&Username=user1",
+			v:        noJSONTagPayload{Username: "user1", SenderID: "CODE123", PhoneNumbers: "+254711111111"},
+			want:     "PhoneNumbers=%2B254711111111&SenderID=CODE123&Username=user1",
 		},
 	}
 	for _, tt := range tests {

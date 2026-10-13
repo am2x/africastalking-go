@@ -44,7 +44,7 @@ type Server struct {
 	requests []Request
 }
 
-// New Server starts a server that answers every request with h and records what
+// NewServer starts a server that answers every request with h and records what
 // it was sent. It is closed automatically when the test finishes.
 func NewServer(t testing.TB, h http.Handler) *Server {
 	t.Helper()
@@ -67,10 +67,10 @@ func NewServer(t testing.TB, h http.Handler) *Server {
 		})
 		s.mu.Unlock()
 
-		r.Body = io.NopCloser(bytes.NewReader(body)) //let the handler read it too
+		r.Body = io.NopCloser(bytes.NewReader(body)) // let the handler read it too
 		h.ServeHTTP(w, r)
 	}))
-	t.Cleanup(s.Server.Close)
+	t.Cleanup(s.Close)
 	return s
 }
 

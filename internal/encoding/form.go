@@ -1,3 +1,10 @@
+// Package encoding turns request payloads into the wire formats Africa's
+// Talking accepts: form encoding for the v1 endpoints on the api host, and
+// JSON for Payments, Mobile Data and parts of Voice.
+//
+// Every function here takes any rather than a concrete payload type, so this
+// package never imports the root package. The dependency runs one way only:
+// root imports internal/encoding, never the reverse.
 package encoding
 
 import (
@@ -26,7 +33,7 @@ func parseFormTag(field reflect.StructField) (string, formOpts, error) {
 
 	name, rest, _ := strings.Cut(tag, ",")
 	if name == "" {
-		name = field.Name //`form:",omitempty"` - options only, keep the Go name
+		name = field.Name // `form:",omitempty"` - options only, keep the Go name
 	}
 
 	var opts formOpts
@@ -45,6 +52,24 @@ func parseFormTag(field reflect.StructField) (string, formOpts, error) {
 	return name, opts, nil
 }
 
+// EncodeForm encodes the exported fields of the struct v as
+// application/x-www-form-urlencoded, which is what the v1 endpoints on the
+// api host expect. v may be a struct or a pointer to one.
+//
+// Field names and behaviour come from the `form` struct tag:
+//
+//	form:"username"            // wire name
+//	form:"senderId,omitempty"  // omitted when the value is zero
+//	form:"recipients,json"     // marshalled to JSON, sent as a string
+//	form:"-"                   // never sent
+//
+// An untagged field falls back to its Go name. A []string is comma joined,
+// matching how Africa's Talking expects recipient lists; any other slice
+// needs the json option. Use a pointer field where "unset" and the zero
+// value must be distinguished, since omitempty cannot tell them apart.
+//
+// Floats are rejected rather than encoded: a monetary amount must never go
+// over the wire as a binary float. Pass it as a string or minor units.
 func EncodeForm(v any) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 	for rv.Kind() == reflect.Pointer {
@@ -74,7 +99,7 @@ func EncodeForm(v any) ([]byte, error) {
 		if opts.omitEmpty && fv.IsZero() {
 			continue
 		}
-		if fv.Kind() == reflect.Pointer { //nil pointer = field absent
+		if fv.Kind() == reflect.Pointer { // nil pointer = field absent
 			if fv.IsNil() {
 				continue
 			}

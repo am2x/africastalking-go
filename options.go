@@ -50,7 +50,7 @@ func WithBaseURL(rawURL string) Option {
 		at.hosts = hosts{api: base, voice: base, payments: base}
 		return nil
 	}
-} //escape hatch/testing
+} // escape hatch/testing
 // func WithRetry()     {}
 // func WithUserAgent() Option{}
 // func WithLogger() Option {}

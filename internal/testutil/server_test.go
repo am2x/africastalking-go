@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/allanmuiruri/africastalking-go/internal/transport"
 )
 
 func get(t testing.TB, url string) *http.Response {
@@ -12,7 +14,9 @@ func get(t testing.TB, url string) *http.Response {
 	if err != nil {
 		t.Fatalf("GET %s: %v", url, err)
 	}
-	t.Cleanup(func() { _ = resp.Body.Close() })
+	t.Cleanup(func() {
+		_ = resp.Body.Close()
+	})
 	return resp
 }
 
@@ -23,8 +27,8 @@ func TestRespond(t *testing.T) {
 	if resp.StatusCode != http.StatusTeapot {
 		t.Errorf("StatusCode = %d, want 418", resp.StatusCode)
 	}
-	if got := resp.Header.Get("Content-Type"); got != "application/json" {
-		t.Errorf("Content-Type = %q, want application/json", got)
+	if got := resp.Header.Get("Content-Type"); got != transport.ContentTypeJSON {
+		t.Errorf("Content-Type = %q, want %s", got, transport.ContentTypeJSON)
 	}
 }
 
@@ -35,7 +39,7 @@ func TestServerRecordsRequests(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", transport.ContentTypeJSON)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "test-agent")
 	req.Header.Set("apiKey", "secret-key")
