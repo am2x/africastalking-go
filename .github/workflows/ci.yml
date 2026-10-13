@@ -28,7 +28,10 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: stable
+          # Pinned, not floating: golangci-lint type-checks via x/tools, which
+          # cannot read export data from a Go newer than its own release. A
+          # floating `stable` silently breaks lint whenever Go ships a release.
+          go-version-file: go.mod
 
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${{ env.GOLANGCI_VERSION }}
