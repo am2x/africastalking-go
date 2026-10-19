@@ -7,11 +7,17 @@ import (
 	"github.com/allanmuiruri/africastalking-go/internal/testutil"
 )
 
+const (
+	testAPIKey string = "test-api-key"
+	testUser   string = "testuser"
+	testLinkID string = "SampleLinkId123"
+)
+
 func newTestClient(t testing.TB, h http.Handler) (*AfricasTalking, *testutil.Server) {
 	t.Helper()
 	srv := testutil.NewServer(t, h)
 	at, err := New(
-		WithCredentials("testuser", "test-api-key"),
+		WithCredentials(testUser, testAPIKey),
 		WithBaseURL(srv.URL),
 	)
 	if err != nil {
