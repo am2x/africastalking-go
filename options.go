@@ -47,7 +47,7 @@ func WithBaseURL(rawURL string) Option {
 			return fmt.Errorf("africastalking: base url %q needs a scheme and host", rawURL)
 		}
 		base := strings.TrimSuffix(rawURL, "/")
-		at.hosts = hosts{api: base, voice: base, payments: base}
+		at.hosts = hosts{api: base, voice: base, payments: base, content: base}
 		return nil
 	}
 } // escape hatch/testing

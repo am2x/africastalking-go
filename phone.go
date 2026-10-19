@@ -22,7 +22,7 @@ func normalizePhoneNumber(s string) (string, error) {
 	}
 
 	if !phoneE164.MatchString(cleaned) {
-		return "", fmt.Errorf("africastalking: %q is not a valid international phone number (expected E.164, e.g. +254711123456)", s)
+		return "", fmt.Errorf("africastalking: incorrect phone number format: %s (expected E.164, e.g. +254711123456)", s)
 	}
 
 	return cleaned, nil

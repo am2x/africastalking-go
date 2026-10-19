@@ -17,7 +17,8 @@ type AfricasTalking struct {
 	// logger
 }
 
-func (at *AfricasTalking) apiURL(path string) string { return at.hosts.api + path }
+func (at *AfricasTalking) apiURL(path string) string     { return at.hosts.api + path }
+func (at *AfricasTalking) contentURL(path string) string { return at.hosts.content + path }
 
 // func (at *AfricasTalking) voiceURL(path string) string    { return at.hosts.voice + path }
 // func (at *AfricasTalking) paymentsURL(path string) string { return at.hosts.payments + path }

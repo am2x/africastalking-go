@@ -104,7 +104,14 @@ func (c *HTTPClient) Do(ctx context.Context, r Request, apiKey string) (*Respons
 
 // do performs a single attempt.
 func (c *HTTPClient) do(ctx context.Context, r Request, apiKey string) (*Response, error) {
-	request, err := http.NewRequestWithContext(ctx, r.Method, r.URL, bytes.NewReader(r.Body))
+	var fullURL string
+	if len(r.Query) > 0 {
+		fullURL = r.URL + "?" + r.Query.Encode()
+	} else {
+		fullURL = r.URL
+	}
+
+	request, err := http.NewRequestWithContext(ctx, r.Method, fullURL, bytes.NewReader(r.Body))
 	if err != nil {
 		return &Response{}, fmt.Errorf("transport: build request: %w", err)
 	}
@@ -112,9 +119,6 @@ func (c *HTTPClient) do(ctx context.Context, r Request, apiKey string) (*Respons
 	request.Header.Set("Content-Type", r.ContentType)
 	request.Header.Set("User-Agent", r.UserAgent)
 	request.Header.Set("apiKey", apiKey)
-	if len(r.Query) > 0 {
-		r.URL = r.URL + "?" + r.Query.Encode()
-	}
 
 	response, err := c.Client.Do(request)
 	if err != nil {

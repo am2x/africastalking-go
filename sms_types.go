@@ -63,6 +63,32 @@ type SMSRecipient struct {
 	MessageID  string        `json:"messageId"`
 }
 
+// FetchResponse is the result of [SMSService.Fetch].
+type FetchResponse struct {
+	SMSMessageData FetchMessageData `json:"SMSMessageData"`
+}
+
+// FetchMessageData wraps the page of messages returned by a fetch. Africa's
+// Talking nests it under an "SMSMessageData" key, mirroring the send response.
+type FetchMessageData struct {
+	Messages []FetchMessage `json:"Messages"`
+}
+
+// FetchMessage is a single inbound message. ID is the cursor value: pass the
+// ID of the last message you processed as lastReceivedID on the next
+// [SMSService.Fetch] call.
+//
+// Note the direction of the fields relative to a send: From is the subscriber
+// who messaged you, and To is your own short code.
+type FetchMessage struct {
+	LinkID string `json:"linkId"`
+	Text   string `json:"text"`
+	To     string `json:"to"`
+	ID     int    `json:"id"`
+	Date   string `json:"date"`
+	From   string `json:"from"`
+}
+
 // Africa's Talking expects enqueue as 0 or 1 rather than a boolean.
 func boolToInt(b bool) int8 {
 	if b {

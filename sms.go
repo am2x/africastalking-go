@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/allanmuiruri/africastalking-go/internal/encoding"
 	"github.com/allanmuiruri/africastalking-go/internal/transport"
@@ -16,6 +17,7 @@ type SMSService struct{ at *AfricasTalking }
 const (
 	smsPath        string = "/version1/messaging/bulk"
 	smsPremiumPath string = "/version1/messaging"
+	smsFetchPath   string = "/version1/messaging"
 )
 
 type smsPayload struct {
@@ -58,10 +60,19 @@ func (s *SMSService) Send(ctx context.Context, sms SendSMSRequest) (SendSMSRespo
 		return SendSMSResponse{}, &ValidationErr{Field: "PhoneNumbers", Message: "at least one recipient is required"}
 	}
 
+	numbers := make([]string, 0, len(sms.PhoneNumbers))
+	for i, v := range sms.PhoneNumbers {
+		cleaned, err := normalizePhoneNumber(v)
+		if err != nil {
+			return SendSMSResponse{}, &ValidationErr{Field: "PhoneNumbers", Message: fmt.Sprintf("PhoneNumber [%d]: %v", i, err)}
+		}
+		numbers = append(numbers, cleaned)
+	}
+
 	payload := smsPayload{
 		Username:     s.at.userName,
 		Message:      sms.Message,
-		PhoneNumbers: sms.PhoneNumbers,
+		PhoneNumbers: numbers,
 		SenderID:     sms.SenderID,
 		MaskedNumber: sms.MaskedNumber,
 		Telco:        sms.Telco,
@@ -111,12 +122,21 @@ func (s *SMSService) SendPremium(ctx context.Context, sms SendPremiumSMSRequest)
 		return SendSMSResponse{}, &ValidationErr{Field: "To", Message: "at least one recipient is required"}
 	}
 
+	numbers := make([]string, 0, len(sms.To))
+	for i, v := range sms.To {
+		cleaned, err := normalizePhoneNumber(v)
+		if err != nil {
+			return SendSMSResponse{}, &ValidationErr{Field: "To", Message: fmt.Sprintf("To [%d]: %v", i, err)}
+		}
+		numbers = append(numbers, cleaned)
+	}
+
 	payload := smsPremiumPayload{
 		Username:             s.at.userName,
-		To:                   sms.To,
+		To:                   numbers,
 		Message:              sms.Message,
 		From:                 sms.From,
-		Keyword:              sms.From,
+		Keyword:              sms.Keyword,
 		Enqueue:              boolToInt(sms.Enqueue),
 		LinkID:               sms.LinkID,
 		RetryDurationInHours: sms.RetryDurationInHours,
@@ -133,6 +153,7 @@ func (s *SMSService) SendPremium(ctx context.Context, sms SendPremiumSMSRequest)
 		URL:         s.at.apiURL(smsPremiumPath),
 		ContentType: transport.ContentTypeJSON,
 		Body:        body,
+		UserAgent:   transport.UserAgent,
 		Retryable:   false,
 	}
 
@@ -142,11 +163,50 @@ func (s *SMSService) SendPremium(ctx context.Context, sms SendPremiumSMSRequest)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return SendSMSResponse{}, newAPIError(smsPath, resp)
+		return SendSMSResponse{}, newAPIError(smsPremiumPath, resp)
 	}
 	var data SendSMSResponse
 	if err := json.Unmarshal(resp.Body, &data); err != nil {
 		return SendSMSResponse{}, fmt.Errorf("africastalking: decode sms response: %w", err)
+	}
+
+	return data, nil
+}
+
+// Fetch retrieves messages sent to your short code that Africa's Talking has
+// not yet handed over, oldest first.
+//
+// The inbox is cursor paged rather than offset paged. Pass an empty string or
+// "0" for lastReceivedID to read from the beginning, then pass the ID of the
+// last message you processed to continue. Africa's Talking treats a fetched
+// message as delivered to you, so a cursor you never advance will keep
+// returning the same page, and one you advance past unprocessed messages
+// cannot be rewound - persist it only once the messages are safely stored.
+//
+// An empty Messages slice means there is nothing new, not an error.
+func (s *SMSService) Fetch(ctx context.Context, lastReceivedID string) (FetchResponse, error) {
+	fetchRequest := transport.Request{
+		Method: http.MethodGet,
+		URL:    s.at.contentURL(smsFetchPath),
+		Body:   nil,
+		Query: url.Values{
+			"username":       []string{s.at.userName},
+			"lastReceivedId": []string{lastReceivedID},
+		},
+		Retryable: true,
+	}
+
+	resp, err := s.at.client.Do(ctx, fetchRequest, s.at.apiKey)
+	if err != nil {
+		return FetchResponse{}, fmt.Errorf("africastalking: sms fetch: %w", err)
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return FetchResponse{}, newAPIError(smsFetchPath, resp)
+	}
+	var data FetchResponse
+	if err := json.Unmarshal(resp.Body, &data); err != nil {
+		return FetchResponse{}, fmt.Errorf("africastalking: decode fetch response: %w", err)
 	}
 
 	return data, nil

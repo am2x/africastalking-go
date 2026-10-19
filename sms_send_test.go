@@ -15,7 +15,7 @@ func validSend() SendSMSRequest {
 	return SendSMSRequest{
 		SenderID:     "MYSHORTCODE",
 		Message:      "Hello from Go",
-		PhoneNumbers: []string{"+254700000000"},
+		PhoneNumbers: []string{"+254 711 123 456"},
 	}
 }
 
@@ -39,7 +39,7 @@ func TestSMSSendRequestShape(t *testing.T) {
 	if got.Accept != "application/json" {
 		t.Errorf("Accept = %q, want application/json", got.Accept)
 	}
-	if got.APIKey != "test-api-key" {
+	if got.APIKey != testAPIKey {
 		t.Errorf("apiKey = %q, want the client's key", got.APIKey)
 	}
 	if got.UserAgent == "" {
@@ -56,7 +56,7 @@ func TestSMSSendRequestShape(t *testing.T) {
 	got.DecodeJSON(t, &sent)
 
 	// the SDK fills username from the client; users never pass it
-	if sent.Username != "testuser" {
+	if sent.Username != testUser {
 		t.Errorf("username = %q, want the client's username", sent.Username)
 	}
 	if sent.Message != "Hello from Go" {
@@ -65,7 +65,7 @@ func TestSMSSendRequestShape(t *testing.T) {
 	if sent.SenderID != "MYSHORTCODE" {
 		t.Errorf("senderId = %q", sent.SenderID)
 	}
-	if len(sent.PhoneNumbers) != 1 || sent.PhoneNumbers[0] != "+254700000000" {
+	if len(sent.PhoneNumbers) != 1 || sent.PhoneNumbers[0] != "+254711123456" {
 		t.Errorf("phoneNumbers = %v", sent.PhoneNumbers)
 	}
 	if sent.Enqueue != 0 {
@@ -229,6 +229,21 @@ func TestSMSSendValidationNeverReachesTheNetwork(t *testing.T) {
 		{
 			testName:  "no recipients",
 			mutate:    func(r *SendSMSRequest) { r.PhoneNumbers = nil },
+			wantField: "PhoneNumbers",
+		},
+		{
+			testName:  "missing + phone number",
+			mutate:    func(r *SendSMSRequest) { r.PhoneNumbers = []string{"254711123456"} },
+			wantField: "PhoneNumbers",
+		},
+		{
+			testName:  "number with non-digit characters",
+			mutate:    func(r *SendSMSRequest) { r.PhoneNumbers = []string{"254711ufg456"} },
+			wantField: "PhoneNumbers",
+		},
+		{
+			testName:  "too many digits number",
+			mutate:    func(r *SendSMSRequest) { r.PhoneNumbers = []string{"254711111123456789"} },
 			wantField: "PhoneNumbers",
 		},
 	}
