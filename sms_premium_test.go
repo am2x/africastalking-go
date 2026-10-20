@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/allanmuiruri/africastalking-go/internal/testutil"
-	"github.com/allanmuiruri/africastalking-go/internal/transport"
+	"github.com/am2x/africastalking-go/internal/testutil"
+	"github.com/am2x/africastalking-go/internal/transport"
 )
 
 // validPremium is a premium request that passes validation, so each test can

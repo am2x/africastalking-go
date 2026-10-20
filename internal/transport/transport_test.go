@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/allanmuiruri/africastalking-go/internal/testutil"
+	"github.com/am2x/africastalking-go/internal/testutil"
 )
 
 // reqBody is the payload every test sends, so a test can assert it survived

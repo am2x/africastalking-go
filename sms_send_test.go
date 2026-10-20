@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/allanmuiruri/africastalking-go/internal/testutil"
+	"github.com/am2x/africastalking-go/internal/testutil"
 )
 
 // validSend is a request that passes validation, so a test can focus on one
