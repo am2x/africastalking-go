@@ -1,7 +1,7 @@
-#  African's Talking Go SDK
+#  Africa's Talking Go SDK
 
 
-African's Talking Go SDK is a comprehensive Go library for interacting with the Africa's Talking API, a platform that provides various communication and payment services across Africa.
+Africa's Talking Go SDK is a comprehensive Go library for interacting with the Africa's Talking API, a platform that provides various communication and payment services across Africa.
 
 ## Features
 
@@ -20,13 +20,13 @@ To install the SDK, you need to have Go 1.23 or higher installed on your machine
 - Install the SDK using the go get command:
 
 ```bash
-go get github.com/allanmuiruri/africastalking-go
+go get github.com/am2x/africastalking-go
 ```
 
 - Import the SDK in your code using the import statement:
 
 ```go
-import "github.com/allanmuiruri/africastalking-go"
+import "github.com/am2x/africastalking-go"
 ```
 
 ## Usage
@@ -39,24 +39,29 @@ package main
 import (
 	"fmt"
 	"log"
+	"errors"
+	"context"
+	"net/http"
 
-	"github.com/allanmuiruri/africastalking-go"
+	"github.com/am2x/africastalking-go"
 )
 
 func main() {
 	// Create a client object with your options.
 	at, err := africastalking.New(
-		WithCredentials("YOUR_USERNAME", "YOUR_API_KEY"),
-		WithSandbox() // define whether to use sandbox env or live api.
+		africastalking.WithCredentials("YOUR_USERNAME", "YOUR_API_KEY"),
+		africastalking.WithSandbox(), // define whether to use sandbox env or live api.
 	)
 	if err != nil {
 		// ...
 	}
 
-	resp, err := at.SMS.Send(ctx, &africastalking.SendSMSRequest{
-		To:      []string{"+254711XXXYYY"},
+	ctx := context.Background()
+
+	resp, err := at.SMS.Send(ctx, africastalking.SendSMSRequest{
+		PhoneNumbers:      []string{"+254711XXXYYY"},
 		Message: "Hello",
-		From:    "MYSHORTCODE",
+		SenderID:    "MYSHORTCODE",
 	})
 	
 	var apiErr *africastalking.APIError
@@ -69,14 +74,12 @@ func main() {
 
 ## Testing
 
-To test the SDK, you need to have a test database and a test account with Africa's Talking. You also need to set some environment variables for the test configuration.
+To test the SDK, you need to have a test account with Africa's Talking. You also need to set some environment variables for the test configuration.
 
-- Create a test database and populate it with some test data
 - Create a test account with Africa's Talking and get a test API key and a test username
 - Set the following environment variables:
 
 ```bash
-export AT_TEST_DB_CONNECTION_STRING=YOUR_TEST_DB_CONNECTION_STRING # The connection string for your test database
 export AT_TEST_API_KEY=YOUR_TEST_API_KEY # The API key for your test account
 export AT_TEST_USERNAME=YOUR_TEST_USERNAME # The username for your test account
 ```

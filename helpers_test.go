@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/allanmuiruri/africastalking-go/internal/testutil"
+	"github.com/am2x/africastalking-go/internal/testutil"
 )
 
 const (

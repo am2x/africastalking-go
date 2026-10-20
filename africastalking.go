@@ -3,7 +3,7 @@ package africastalking
 import (
 	"errors"
 
-	"github.com/allanmuiruri/africastalking-go/internal/transport"
+	"github.com/am2x/africastalking-go/internal/transport"
 )
 
 // AfricasTalking is a client for the Africa's Talking API. Create one with

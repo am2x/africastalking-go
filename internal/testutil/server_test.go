@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/allanmuiruri/africastalking-go/internal/transport"
+	"github.com/am2x/africastalking-go/internal/transport"
 )
 
 func get(t testing.TB, url string) *http.Response {

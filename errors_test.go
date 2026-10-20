@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/allanmuiruri/africastalking-go/internal/transport"
+	"github.com/am2x/africastalking-go/internal/transport"
 )
 
 func Test_newAPIError(t *testing.T) {
