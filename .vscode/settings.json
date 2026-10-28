@@ -3,15 +3,22 @@
         "africastalking",
         "africastalkinggo",
         "bodyclose",
+        "bodyless",
         "coverprofile",
+        "GOBIN",
         "goconst",
         "gocritic",
         "gofumpt",
+        "goimports",
         "gosec",
         "ineffassign",
+        "MYSHORTCODE",
         "nolint",
         "Safaricom",
         "SMSMessageData",
-        "Telco"
+        "Telco",
+        "testuser",
+        "testutil",
+        "TOOLBIN"
     ]
 }
