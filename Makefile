@@ -33,6 +33,14 @@ fmt-check: ## Fail if anything is unformatted
 vet: ## Run go vet
 	go vet ./...
 
+# TOOLBIN := $(CURDIR)/.tools/bin
+
+# $(TOOLBIN)/golangci-lint:
+# 	GOBIN=$(TOOLBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_VERSION)
+
+# lint: $(TOOLBIN)/golangci-lint
+# 	$(TOOLBIN)/golangci-lint run
+
 lint: ## Run the linters
 	golangci-lint run
 
